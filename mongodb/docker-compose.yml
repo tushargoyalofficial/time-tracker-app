@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  mongodb_container:
+    image: mongo:latest
+    container_name: "mongodb_container"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    ports:
+      - 27017:27017
+    networks:
+      clusternetwork:
+        ipv4_address: 172.16.0.14
+    volumes:
+      - mongodb_data_container:/data/db
+
+networks:
+  clusternetwork:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.0.0/24
+
+volumes:
+  mongodb_data_container:
+
