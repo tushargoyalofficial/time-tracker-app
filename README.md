@@ -6,15 +6,19 @@
 
 ## Frontend server
 
-Run `nx serve frontend` for a frontend server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.
+Run `npx nx serve frontend` for a frontend server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.
 
 ## Backend server
 
-Run `nx serve backend` for a frontend server. Navigate to http://localhost:3000/. The app will automatically reload if you change any of the source files.
+Run `npx nx serve backend` for a frontend server. Navigate to http://localhost:3000/. The app will automatically reload if you change any of the source files.
+
+## Running server parallel
+
+Run `npx nx run-many --target=serve --projects=frontend,backend --parallel` for running both frontend and backend at once.
 
 ## Understand this workspace
 
-Run `nx graph` to see a diagram of the dependencies of the projects.
+Run `npx nx graph` to see a diagram of the dependencies of the projects.
 
 ## Remote caching
 
