@@ -1,19 +1,15 @@
+import { ObjectId } from "mongoose";
+
 export interface IBaseUser {
   name: string;
   email: string;
   password: string;
-  createAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface IUser extends IBaseUser {
-  id: string;
-}
-
-export interface IUserResponse {
-  token: string;
-  name: string;
-  email: string;
+  id: ObjectId;
 }
 
 export interface IAddUser {
@@ -26,4 +22,18 @@ export interface IAddUserResponse {
   status: number;
   success: boolean;
   message: string;
+}
+
+export interface ILoginUser {
+  email: string
+  password: string
+}
+
+export interface ILoginResponse {
+  status: number;
+  success: boolean;
+  message: string;
+  token?: string;
+  name?: string;
+  email?: string;
 }

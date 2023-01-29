@@ -1,5 +1,10 @@
-import { IAddUser, IAddUserResponse } from '@time-tracker-app/models';
-import { IUserModel, User } from '../schemas/user.schema';
+import {
+  IAddUser,
+  IAddUserResponse,
+  ILoginResponse,
+  ILoginUser,
+} from '@time-tracker-app/models';
+import { IUserModel, IUserSchema, User } from '../schemas/user.schema';
 
 export default class UserController {
   public async addUser(user: IAddUser): Promise<IAddUserResponse> {
@@ -16,13 +21,11 @@ export default class UserController {
     }
 
     // Register user if it not exists in db
-    const newUser: IUserModel | void = await User.create({
+    const newUser = await User.create({
       name: user.name,
       email: user.email,
       password: user.password,
-    }).catch(
-      console.log
-    );
+    }).catch(console.log);
     if (newUser) {
       return {
         status: 200,
@@ -32,5 +35,23 @@ export default class UserController {
     }
 
     return null;
+  }
+
+  public async login(data: ILoginUser): Promise<ILoginResponse> {
+    // find if user exists or not
+    const userRecord: IUserSchema & IUserModel = await User.findOne({
+      email: data.email,
+    });
+
+    if (userRecord) {
+      const isMatch: boolean = userRecord.schema.methods.comparePassword(
+        data.password, userRecord.password
+      );
+      return {
+        status: isMatch ? 200 : 500,
+        success: isMatch,
+        message: isMatch ? 'Login successful' : 'Wrong password',
+      };
+    }
   }
 }

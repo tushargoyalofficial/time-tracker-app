@@ -6,11 +6,11 @@ const saltRounds = 10;
 
 export interface IUserSchema extends IBaseUser, Document {}
 export type IInstanceMethods = {
-  comparePassword: (password: string) => void;
+  comparePassword: (password: string, hashedPassword: string) => boolean;
 };
-export type IUserModel = Model<IUserSchema, null, IInstanceMethods>;
+export type IUserModel = Model<IUserSchema, object, IInstanceMethods>;
 
-const UserSchema: Schema = new Schema({
+const UserSchema = new Schema<IUserSchema, IUserModel, IInstanceMethods>({
   name: { type: String, required: true, trim: true },
   email: { type: String, required: true, trim: true, unique: true },
   password: { type: String, required: true },
@@ -40,14 +40,9 @@ UserSchema.pre<IUserSchema>('save', function (next) {
   }
 });
 
-UserSchema.methods.comparePassword = function (password: string, callback) {
-  bcrypt.compare(password, this.password, function (error, isMatch) {
-    if (error) {
-      return callback(error);
-    } else {
-      callback(null, isMatch);
-    }
-  });
-};
+UserSchema.method('comparePassword', function (password: string, hashedPassword: string): boolean {
+  if (bcrypt.compareSync(password, hashedPassword)) return true;
+  return false;
+});
 
-export const User = model<IUserModel>('User', UserSchema);
+export const User: IUserModel = model<IUserSchema, IUserModel>('User', UserSchema);
