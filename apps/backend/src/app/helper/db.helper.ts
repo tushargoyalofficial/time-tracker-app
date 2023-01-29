@@ -3,7 +3,7 @@ import * as mongoose from 'mongoose';
 export class DBHelper {
   static init(): void {
     mongoose
-      .connect('mongodb://172.16.0.14/test', {
+      .connect('mongodb://root:rootpassword@172.16.0.14/timetracker_db?authSource=admin', {
         autoIndex: false, // Don't build indexes
         maxPoolSize: 10, // Maintain up to 10 socket connections
         serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
