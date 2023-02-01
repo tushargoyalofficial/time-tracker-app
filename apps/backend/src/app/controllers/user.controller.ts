@@ -5,6 +5,7 @@ import {
   ILoginUser,
 } from '@time-tracker-app/models';
 import { IUserModel, IUserSchema, User } from '../schemas/user.schema';
+import { signJwt } from '../utils/jwt';
 
 export default class UserController {
   public async addUser(user: IAddUser): Promise<IAddUserResponse> {
@@ -47,10 +48,27 @@ export default class UserController {
       const isMatch: boolean = userRecord.schema.methods.comparePassword(
         data.password, userRecord.password
       );
+
+      if (isMatch) {
+        // get access token
+        const accessToken = signJwt({
+          sub: userRecord._id
+        }, {
+          expiresIn: `${process.env.ACCESS_TOKEN_EXPIRES_IN}m`
+        })
+
+        return {
+          status: 200,
+          success: isMatch,
+          token: accessToken,
+          message: 'Login successful',
+        };
+      }
+
       return {
-        status: isMatch ? 200 : 500,
+        status: 500,
         success: isMatch,
-        message: isMatch ? 'Login successful' : 'Wrong password',
+        message: 'Wrong password',
       };
     }
   }

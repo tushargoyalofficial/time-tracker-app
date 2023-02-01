@@ -1,9 +1,11 @@
 import * as mongoose from 'mongoose';
 
+const dbUrl = `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@172.16.0.14/${process.env.MONGODB_DATABASE_NAME}?authSource=admin`;
+
 export class DBHelper {
   static init(): void {
     mongoose
-      .connect('mongodb://root:rootpassword@172.16.0.14/timetracker_db?authSource=admin', {
+      .connect(dbUrl, {
         autoIndex: false, // Don't build indexes
         maxPoolSize: 10, // Maintain up to 10 socket connections
         serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
