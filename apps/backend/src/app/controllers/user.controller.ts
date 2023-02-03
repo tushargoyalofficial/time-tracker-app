@@ -35,7 +35,11 @@ export default class UserController {
       };
     }
 
-    return null;
+    return {
+      status: 500,
+      success: false,
+      message: 'Something went wrong',
+    };
   }
 
   public async login(data: ILoginUser): Promise<ILoginResponse> {

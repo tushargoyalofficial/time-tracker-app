@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+import { ObjectId } from 'mongoose';
 
 export interface IBaseUser {
   name: string;
@@ -25,8 +25,8 @@ export interface IAddUserResponse {
 }
 
 export interface ILoginUser {
-  email: string
-  password: string
+  email: string;
+  password: string;
 }
 
 export interface ILoginResponse {
