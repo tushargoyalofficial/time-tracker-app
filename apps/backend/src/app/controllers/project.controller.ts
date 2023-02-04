@@ -64,6 +64,7 @@ export default class ProjectController {
         name: project.name,
         description: project.description,
         language: project.language,
+        updatedAt: new Date(),
       },
       { new: true }
     );

@@ -24,6 +24,17 @@ export interface IAddUserResponse {
   message: string;
 }
 
+export interface ISingleUserResponse {
+  data: {
+    id: ObjectId;
+    name: string;
+    email: string;
+  };
+  status: number;
+  success: boolean;
+  message: string;
+}
+
 export interface ILoginUser {
   email: string;
   password: string;

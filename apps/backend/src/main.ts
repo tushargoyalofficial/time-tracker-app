@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import express, { Application, NextFunction, Request, Response } from 'express';
+import express, { Application } from 'express';
 import cors from 'cors';
 import { DBHelper } from './app/helper/db.helper';
 import routes from './app/routes/index';
