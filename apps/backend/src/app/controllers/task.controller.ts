@@ -10,8 +10,11 @@ import {
 import { Task } from '../schemas/task.schema';
 
 export default class TaskController {
-  public async getAllTasks(): Promise<IAllTasksResponse> {
-    const tasks: ITask[] = await Task.find();
+  public async getAllTasks(
+    projectId: string,
+    userId: string
+  ): Promise<IAllTasksResponse> {
+    const tasks: ITask[] = await Task.find({ projectId, userId });
     return {
       data: tasks,
       status: 200,
