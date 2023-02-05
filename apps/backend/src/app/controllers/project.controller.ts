@@ -7,7 +7,8 @@ import {
   IProjectResponse,
   ISingleProjectsResponse,
 } from '@time-tracker-app/models';
-import { Project } from '../schemas/project.schema';
+import { UserProjectController } from '.';
+import { IProjectSchema, Project } from '../schemas/project.schema';
 
 export default class ProjectController {
   public async getAllProjects(): Promise<IAllProjectsResponse> {
@@ -37,9 +38,12 @@ export default class ProjectController {
     };
   }
 
-  public async addProject(project: IAddProject): Promise<IProjectResponse> {
-    const newData = await Project.create(project).catch(console.log);
-    if (newData) {
+  public async addProject(project: IAddProject, userId: string): Promise<IProjectResponse> {
+    const newProject: IProjectSchema = await Project.create(project);
+    const userProjectController = new UserProjectController()
+    userProjectController.saveProjectForUser(newProject._id, userId)
+
+    if (newProject) {
       return {
         status: 200,
         success: true,

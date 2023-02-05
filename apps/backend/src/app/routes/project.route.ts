@@ -1,8 +1,11 @@
 import { IAddProject, IEditProject } from '@time-tracker-app/models';
 import { Request, Response, Router } from 'express';
 import { ProjectController } from '../controllers/index';
+import { deserializeUser } from '../middleware/deserializeUser';
+import { requireUser } from '../middleware/requireUser';
 
 const router = Router();
+router.use(deserializeUser, requireUser);
 
 router.get('/all', async (_req: Request, res: Response) => {
   const controller = new ProjectController();
@@ -34,7 +37,7 @@ router.post('/add', async (req: Request, res: Response) => {
     data.description &&
     data.language
   ) {
-    const response = await controller.addProject(data);
+    const response = await controller.addProject(data, res.locals.user.data.id);
     return res.status(response.status).send(response);
   } else {
     const err = {
