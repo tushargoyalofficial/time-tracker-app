@@ -2,12 +2,29 @@ import { UserProject } from '../schemas/userProject.schema';
 
 export default class UserProjectController {
   public async getProjectsForUser(userId: string) {
-    const rec = await UserProject.find({userId})
-      .populate('projectId')
-      .lean();
-    if (rec) {
+    const records = await UserProject.aggregate([
+      { $match: { userId } },
+      {
+        $lookup: {
+          from: 'projects',
+          localField: 'projectId',
+          foreignField: '_id',
+          as: 'pdata',
+        },
+      },
+      { $unwind: '$pdata' },
+      {
+        $group: {
+          _id: '$userId',
+          projects: {
+            $push: '$pdata',
+          },
+        },
+      },
+    ]);
+    if (records) {
       return {
-        data: rec,
+        data: records[0],
         status: 200,
         success: true,
         message: 'Records fetched successfully',
