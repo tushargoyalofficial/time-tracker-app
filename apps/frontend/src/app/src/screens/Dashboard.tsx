@@ -80,11 +80,11 @@ const DashboardScreen: FC = () => {
       </Container>
       <Container maxWidth="md" component="main">
         <Grid container spacing={5} alignItems="flex-end">
-          {mockData.map((tier) => (
-            <Grid item key={tier.id} xs={12} sm={6} md={4}>
+          {mockData.map((project) => (
+            <Grid item key={project.id} xs={12} sm={6} md={4}>
               <Card>
                 <CardHeader
-                  title={tier.title}
+                  title={project.title}
                   titleTypographyProps={{ align: 'center' }}
                   action={null}
                   subheaderTypographyProps={{
@@ -97,7 +97,7 @@ const DashboardScreen: FC = () => {
                         : theme.palette.grey[700],
                   }}
                 />
-                <CardContent>{tier.description}</CardContent>
+                <CardContent>{project.description}</CardContent>
                 <CardActions>
                   <Button fullWidth variant={'outlined'}>
                     Show Tasks
