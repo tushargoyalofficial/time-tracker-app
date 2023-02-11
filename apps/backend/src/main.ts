@@ -13,7 +13,7 @@ const app: Application = express();
 app.use(express.json({ limit: '10kb' }));
 app.use(
   cors({
-    origin: `${process.env.ORIGIN}`,
+    origin: [`${process.env.ORIGIN}`, `${process.env.FRONTEND_ORIGIN}`],
     credentials: true,
   })
 );

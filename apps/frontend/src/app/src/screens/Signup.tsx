@@ -11,18 +11,47 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Copyright from '../components/Copyright';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import baseApi from '../utils/baseApi';
+import Snackbar from '@mui/material/Snackbar';
+import ShowAlert from '../utils/showAlert';
 
 const theme = createTheme();
 
 const SignupScreen: FC = () => {
+  const navigate = useNavigate();
+  const { isActive, message, openSnackBar } = ShowAlert();
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
+      name: `${data.get('firstName')} ${data.get('lastName')}`,
       email: data.get('email'),
       password: data.get('password'),
     });
+    fetch(baseApi + '/user/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: data.get('firstName') + ' ' + data.get('lastName'),
+        email: data.get('email'),
+        password: data.get('password'),
+      }),
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        console.log(response, response.status, typeof response.status);
+        if (response.status === 200) {
+          console.log('inside if of status 200');
+          navigate('/');
+        }
+        openSnackBar(response.message);
+      })
+      .catch((e) => console.log(e))
+      .finally();
   };
 
   return (
@@ -112,6 +141,7 @@ const SignupScreen: FC = () => {
         </Box>
         <Copyright sx={{ mt: 5 }} />
       </Container>
+      <Snackbar open={isActive} message={message} />
     </ThemeProvider>
   );
 };
