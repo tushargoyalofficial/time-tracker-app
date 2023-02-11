@@ -13,18 +13,41 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Copyright from '../components/Copyright';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import baseApi from '../utils/baseApi';
+import ShowAlert from '../utils/showAlert';
+import Snackbar from '@mui/material/Snackbar';
 
 const theme = createTheme();
 
 const LoginScreen: FC = () => {
+  const navigate = useNavigate();
+  const { isActive, message, openSnackBar } = ShowAlert();
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    fetch(baseApi + '/user/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: data.get('email'),
+        password: data.get('password'),
+      }),
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        console.log('response=> ', response);
+        if (response.status === 200) {
+          localStorage.setItem('token', response.token);
+          navigate('/dashboard');
+        }
+        openSnackBar(response.message);
+      })
+      .catch((e) => console.log(e))
+      .finally();
   };
 
   return (
@@ -95,6 +118,7 @@ const LoginScreen: FC = () => {
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
+      <Snackbar open={isActive} message={message} />
     </ThemeProvider>
   );
 };

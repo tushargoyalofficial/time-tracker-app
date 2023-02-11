@@ -25,11 +25,6 @@ const SignupScreen: FC = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      name: `${data.get('firstName')} ${data.get('lastName')}`,
-      email: data.get('email'),
-      password: data.get('password'),
-    });
     fetch(baseApi + '/user/register', {
       method: 'POST',
       headers: {
@@ -43,9 +38,7 @@ const SignupScreen: FC = () => {
     })
       .then((res) => res.json())
       .then((response) => {
-        console.log(response, response.status, typeof response.status);
         if (response.status === 200) {
-          console.log('inside if of status 200');
           navigate('/');
         }
         openSnackBar(response.message);
