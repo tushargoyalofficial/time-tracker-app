@@ -1,4 +1,11 @@
-import { FC, memo, SyntheticEvent, useState } from 'react';
+import {
+  FC,
+  memo,
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import Navbar from '../components/Navbar';
@@ -9,9 +16,48 @@ import {
   AccordionDetails,
   AccordionSummary,
 } from '../components/CustomAccordian';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import ShowAlert from '../utils/showAlert';
+import Snackbar from '@mui/material/Snackbar';
+import baseApi from '../utils/baseApi';
+import { IAllTask, IAllTasksResponse } from '@time-tracker-app/models';
 
 const TaskScreen: FC = () => {
-  const [expanded, setExpanded] = useState<string | false>('panel1');
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { isActive, message, openSnackBar } = ShowAlert();
+  const [expanded, setExpanded] = useState<string | false>('');
+  const [tasks, setTasks] = useState<IAllTask[]>([]);
+
+  const fetchTasks = useCallback(() => {
+    if (!localStorage.getItem('token')) {
+      navigate('/');
+      openSnackBar('First please login!');
+    }
+
+    fetch(baseApi + `/task/all/${searchParams.get('projectId')}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((response: IAllTasksResponse) => {
+        if (response.status === 200 && response.data) {
+          setTasks(response.data);
+        }
+      })
+      .catch((e) => {
+        openSnackBar(e.message);
+      })
+      .finally();
+  }, [navigate, openSnackBar, searchParams]);
+
+  useEffect(() => {
+    if (searchParams.get('projectId')) {
+      fetchTasks();
+    }
+  }, [fetchTasks, searchParams]);
 
   const handleChange =
     (panel: string) => (_event: SyntheticEvent, newExpanded: boolean) => {
@@ -47,57 +93,23 @@ const TaskScreen: FC = () => {
         </Typography>
       </Container>
       <Container maxWidth="md" component="main">
-        <Accordion
-          expanded={expanded === 'panel1'}
-          onChange={handleChange('panel1')}
-        >
-          <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
-            <Typography>Task 1</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-              eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-              eget.
-            </Typography>
-          </AccordionDetails>
-        </Accordion>
-        <Accordion
-          expanded={expanded === 'panel2'}
-          onChange={handleChange('panel2')}
-        >
-          <AccordionSummary aria-controls="panel2d-content" id="panel2d-header">
-            <Typography>Task 2</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-              eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-              eget.
-            </Typography>
-          </AccordionDetails>
-        </Accordion>
-        <Accordion
-          expanded={expanded === 'panel3'}
-          onChange={handleChange('panel3')}
-        >
-          <AccordionSummary aria-controls="panel3d-content" id="panel3d-header">
-            <Typography>Task 3</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-              eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-              eget.
-            </Typography>
-          </AccordionDetails>
-        </Accordion>
+        {tasks.map((task) => (
+          <Accordion
+            key={task._id.toString()}
+            expanded={expanded === task._id.toString()}
+            onChange={handleChange(task._id.toString())}
+          >
+            <AccordionSummary
+              aria-controls="panel1d-content"
+              id="panel1d-header"
+            >
+              <Typography>{task.title}</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography>{task.description}</Typography>
+            </AccordionDetails>
+          </Accordion>
+        ))}
       </Container>
       <Container
         maxWidth="md"
@@ -110,6 +122,7 @@ const TaskScreen: FC = () => {
       >
         <Copyright sx={{ mt: 5 }} />
       </Container>
+      <Snackbar open={isActive} message={message} />
     </>
   );
 };

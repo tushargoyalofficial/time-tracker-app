@@ -6,6 +6,7 @@ import {
   IEditTask,
   IEditTaskResponse,
   ITaskResponse,
+  IAllTask,
 } from '@time-tracker-app/models';
 import { Task } from '../schemas/task.schema';
 
@@ -14,7 +15,7 @@ export default class TaskController {
     projectId: string,
     userId: string
   ): Promise<IAllTasksResponse> {
-    const tasks: ITask[] = await Task.find({ projectId, userId });
+    const tasks: IAllTask[] = await Task.find({ projectId, userId });
     return {
       data: tasks,
       status: 200,

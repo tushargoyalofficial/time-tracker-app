@@ -28,8 +28,12 @@ export interface IEditTask {
   userId: ObjectId;
 }
 
+export interface IAllTask extends IBaseTask {
+  _id: ObjectId;
+}
+
 export interface IAllTasksResponse {
-  data?: ITask[];
+  data?: IAllTask[];
   status: number;
   success: boolean;
   message: string;

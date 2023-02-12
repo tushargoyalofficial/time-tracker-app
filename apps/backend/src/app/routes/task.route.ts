@@ -7,11 +7,11 @@ import { requireUser } from '../middleware/requireUser';
 const router = Router();
 router.use(deserializeUser, requireUser);
 
-router.get('/all', async (req: Request, res: Response) => {
+router.get('/all/:projectId', async (req: Request, res: Response) => {
   const controller = new TaskController();
-  if (req.body.projectId) {
+  if (req.params.projectId) {
     const response = await controller.getAllTasks(
-      req.body.projectId,
+      req.params.projectId,
       res.locals.user.data.id
     );
     return res.status(response.status).send(response);

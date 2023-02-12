@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Copyright from '../components/Copyright';
 import Navbar from '../components/Navbar';
-import { useNavigate } from 'react-router-dom';
+import { createSearchParams, useNavigate } from 'react-router-dom';
 import ShowAlert from '../utils/showAlert';
 import Snackbar from '@mui/material/Snackbar';
 import baseApi from '../utils/baseApi';
@@ -43,7 +43,6 @@ const DashboardScreen: FC = () => {
         }
       })
       .catch((e) => {
-        navigate('/');
         openSnackBar(e.message);
       })
       .finally();
@@ -52,6 +51,15 @@ const DashboardScreen: FC = () => {
   useEffect(() => {
     fetchProjects();
   }, [fetchProjects]);
+
+  const showTasks = (projectId: string) => {
+    navigate({
+      pathname: '/task',
+      search: createSearchParams({
+        projectId,
+      }).toString(),
+    });
+  };
 
   return (
     <>
@@ -84,7 +92,7 @@ const DashboardScreen: FC = () => {
       <Container maxWidth="md" component="main">
         <Grid container spacing={5} alignItems="stretch">
           {projects.map((project) => (
-            <Grid item key={JSON.stringify(project._id)} xs={12} sm={6} md={4}>
+            <Grid item key={project._id.toString()} xs={12} sm={6} md={4}>
               <Card className="same-height">
                 <CardHeader
                   title={project.name}
@@ -102,7 +110,11 @@ const DashboardScreen: FC = () => {
                 />
                 <CardContent>{project.description}</CardContent>
                 <CardActions>
-                  <Button fullWidth variant={'outlined'}>
+                  <Button
+                    fullWidth
+                    variant={'outlined'}
+                    onClick={() => showTasks(project._id.toString())}
+                  >
                     Show Tasks
                   </Button>
                 </CardActions>
