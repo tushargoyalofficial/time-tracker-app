@@ -10,6 +10,8 @@ Run `npx nx serve frontend` for a frontend server. Navigate to http://localhost:
 
 ## Backend server
 
+Run $ cd mongodb
+Run $ docker-compose up // to start the mongodb server in docker
 Run `npx nx serve backend` for a frontend server. Navigate to http://localhost:3000/. The app will automatically reload if you change any of the source files.
 
 ## Running server parallel
