@@ -1,4 +1,4 @@
-import { FC, memo } from 'react';
+import { FC, memo, useCallback, useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -10,46 +10,49 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Copyright from '../components/Copyright';
 import Navbar from '../components/Navbar';
-
-const mockData = [
-  {
-    id: '1',
-    title: 'Free',
-    description:
-      'Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.',
-    language: 'JS',
-  },
-  {
-    id: '2',
-    title: 'Bug',
-    description:
-      'Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.',
-    language: 'TS',
-  },
-  {
-    id: '3',
-    title: 'Addon',
-    description:
-      'Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.',
-    language: 'Next JS',
-  },
-  {
-    id: '4',
-    title: 'Archive',
-    description:
-      'Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.',
-    language: '.NET',
-  },
-  {
-    id: '5',
-    title: 'Develop',
-    description:
-      'Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.',
-    language: 'React Native',
-  },
-];
+import { useNavigate } from 'react-router-dom';
+import ShowAlert from '../utils/showAlert';
+import Snackbar from '@mui/material/Snackbar';
+import baseApi from '../utils/baseApi';
+import {
+  IUserProjectArray,
+  IUserProjectsResponse,
+} from '@time-tracker-app/models';
 
 const DashboardScreen: FC = () => {
+  const navigate = useNavigate();
+  const { isActive, message, openSnackBar } = ShowAlert();
+  const [projects, setProjects] = useState<IUserProjectArray[]>([]);
+
+  const fetchProjects = useCallback(() => {
+    if (!localStorage.getItem('token')) {
+      navigate('/');
+      openSnackBar('First please login!');
+    }
+
+    fetch(baseApi + '/userProject/all', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((response: IUserProjectsResponse) => {
+        if (response.status === 200 && response.data?.projects) {
+          setProjects(response.data?.projects);
+        }
+      })
+      .catch((e) => {
+        navigate('/');
+        openSnackBar(e.message);
+      })
+      .finally();
+  }, [navigate, openSnackBar]);
+
+  useEffect(() => {
+    fetchProjects();
+  }, [fetchProjects]);
+
   return (
     <>
       <CssBaseline />
@@ -79,12 +82,12 @@ const DashboardScreen: FC = () => {
         </Typography>
       </Container>
       <Container maxWidth="md" component="main">
-        <Grid container spacing={5} alignItems="flex-end">
-          {mockData.map((project) => (
-            <Grid item key={project.id} xs={12} sm={6} md={4}>
-              <Card>
+        <Grid container spacing={5} alignItems="stretch">
+          {projects.map((project) => (
+            <Grid item key={JSON.stringify(project._id)} xs={12} sm={6} md={4}>
+              <Card className="same-height">
                 <CardHeader
-                  title={project.title}
+                  title={project.name}
                   titleTypographyProps={{ align: 'center' }}
                   action={null}
                   subheaderTypographyProps={{
@@ -119,6 +122,7 @@ const DashboardScreen: FC = () => {
       >
         <Copyright sx={{ mt: 5 }} />
       </Container>
+      <Snackbar open={isActive} message={message} />
     </>
   );
 };

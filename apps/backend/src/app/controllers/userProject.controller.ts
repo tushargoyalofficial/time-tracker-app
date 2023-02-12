@@ -1,7 +1,10 @@
+import { IUserProjectsResponse } from '@time-tracker-app/models';
 import { UserProject } from '../schemas/userProject.schema';
 
 export default class UserProjectController {
-  public async getProjectsForUser(userId: string) {
+  public async getProjectsForUser(
+    userId: string
+  ): Promise<IUserProjectsResponse> {
     const records = await UserProject.aggregate([
       { $match: { userId } },
       {
