@@ -54,3 +54,35 @@
 ### URL: /api/task/all/{projectId}
 ### Method: GET
 ### headers: { Authorization: Bearer <token>}
+#
+## Add Time against task 
+### URL: /api/timeSlot/add
+### Method: POST
+### headers: { Authorization: Bearer <token>}
+```json
+{
+  date: Date
+  hours: number
+  taskId: string
+  projectId: string
+}
+```
+#
+## Get all recorded work time against task
+### URL: /api/timeSlot/all/{taskId}
+### Method: GET
+### headers: { Authorization: Bearer <token>}
+#
+## Edit recorded time against task 
+### URL: /api/timeSlot/edit
+### Method: POST
+### headers: { Authorization: Bearer <token>}
+```json
+{
+  id: ObjectId
+  date: Date
+  hours: number
+  taskId: string
+  projectId: string
+}
+```
