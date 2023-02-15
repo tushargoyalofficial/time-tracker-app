@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongoose';
 
 export interface IBaseTimeSlot {
-  date: Date;
+  date: number;
   hours: number;
   taskId: ObjectId;
   projectId: ObjectId;

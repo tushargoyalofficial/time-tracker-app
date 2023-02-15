@@ -36,6 +36,8 @@
 - date
 - hours (hours worked in task)
 - taskId (Tasks has many trackedtime relationship)
+- projectId
+- userId
 - createdAt
 - updatedAt
 
